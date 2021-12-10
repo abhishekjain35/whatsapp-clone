@@ -1,0 +1,17 @@
+.users-wrapper {
+  width: 30%;
+  background-color: hotpink;
+  height: 100%;
+  padding: 20px;
+}
+
+#scrollableDiv {
+  height: 100%;
+  overflow: auto;
+  padding: 0 16px;
+  border: 1px solid rgba(140, 140, 140, 0.35);
+}
+
+.active {
+  background-color: aquamarine;
+}

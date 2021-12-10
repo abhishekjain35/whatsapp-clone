@@ -1,0 +1,14 @@
+.home-wrapper {
+  height: calc(100vh - 65px);
+  display: flex;
+  align-items: center;
+}
+
+.home-content {
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
