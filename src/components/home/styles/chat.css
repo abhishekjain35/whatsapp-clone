@@ -1,6 +1,6 @@
 .chat-wrapper {
   width: 50%;
-  background-color: rgb(225, 240, 240);
+  background-color: rgb(10 60 60);
   height: 100%;
   padding: 20px;
   display: flex;
@@ -43,12 +43,22 @@
   height: 100%;
   padding: 10px;
   border-radius: 10px;
+  display: inline-flex;
+  flex-direction: column;
 }
 
 .bubble-left {
-  background-color: rgb(202, 202, 202);
+  background-color: rgb(173 217 211);
 }
 
 .bubble-right {
   background-color: rgb(166, 185, 207);
+}
+
+#details {
+  font-size: 10px;
+}
+
+#time {
+  margin-right: 5px;
 }

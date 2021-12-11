@@ -1,7 +1,7 @@
 import { Form, Input, Button } from "antd";
 import "./style.css";
 
-const SignupComponent = ({ onFinish, onFinishFailed }) => {
+const SignupComponent = ({ onFinish }) => {
   return (
     <div className="signup-wrapper">
       <Form
@@ -16,7 +16,6 @@ const SignupComponent = ({ onFinish, onFinishFailed }) => {
           remember: true,
         }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item

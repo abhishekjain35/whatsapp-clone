@@ -1,8 +1,22 @@
 import "./styles/chat.css";
 import { Button, Input, Form } from "antd";
+import moment from "moment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faCheckDouble } from "@fortawesome/free-solid-svg-icons";
 
 const ChatComponent = ({ onFinish, messages, activeUser }) => {
   const [form] = Form.useForm();
+
+  const getStatusIcon = (status) => {
+    if (status === "read") {
+      return <FontAwesomeIcon icon={faCheckDouble} style={{ color: "blue" }} />;
+    } else if (status === "delivered") {
+      return <FontAwesomeIcon icon={faCheckDouble} />;
+    } else {
+      return <FontAwesomeIcon icon={faCheck} />;
+    }
+  };
+
   return (
     <div className="chat-wrapper">
       <div id="message-container">
@@ -25,11 +39,20 @@ const ChatComponent = ({ onFinish, messages, activeUser }) => {
                     : "bubble-left"
                 }`}
               >
-                {data.message}
+                <span>{data.message}</span>
+                {data.receiverId === activeUser.uid ? (
+                  <span id="details">
+                    <span id="time">
+                      {/* {new Date(data.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })} */}
+                      {moment(data.timestamp).fromNow()}
+                    </span>
+                    <span id="status">{getStatusIcon(data.status)}</span>
+                  </span>
+                ) : null}
               </span>
-              {data.receiverId === activeUser.uid ? (
-                <span>{data.status}</span>
-              ) : null}
             </div>
           </div>
         ))}
@@ -57,7 +80,7 @@ const ChatComponent = ({ onFinish, messages, activeUser }) => {
             <Input placeholder="Enter message..." />
           </Form.Item>
 
-          <Form.Item style={{ textAlign: "center" }}>
+          <Form.Item style={{ textAlign: "center", margin: "10px 0 0 0" }}>
             <Button type="primary" htmlType="submit">
               Submit
             </Button>

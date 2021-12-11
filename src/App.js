@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import "antd/dist/antd.css";
 import Home from "./pages/home";
 import Signup from "./pages/signup";
-import firebaseApp from './firebase'
+import "./firebase";
 
 function App() {
   return (

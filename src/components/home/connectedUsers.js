@@ -36,7 +36,6 @@ const ConnectedUsersComponent = ({ users, handleActiveUser, activeUser }) => {
           dataLength={users.length}
           next={loadMoreData}
           loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-          endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
           scrollableTarget="scrollableDiv"
         >
           <List
@@ -45,12 +44,14 @@ const ConnectedUsersComponent = ({ users, handleActiveUser, activeUser }) => {
               <List.Item
                 key={item.email}
                 onClick={() => handleActiveUser(item)}
-                style={{ cursor: "pointer" }}
-                className={`${activeUser.uid === item.uid ? "active" : ""}`}
+                style={{ cursor: "pointer", border: "none" }}
+                className={`user-profile ${
+                  activeUser.uid === item.uid ? "active" : ""
+                }`}
               >
                 <List.Item.Meta
                   avatar={<Avatar src={"https://joeschmoe.io/api/v1/jon"} />}
-                  title={<a href="https://ant.design">{item.username}</a>}
+                  title={item.username}
                   description={item.email}
                 />
                 <div>{item.status}</div>

@@ -15,7 +15,6 @@ import {
   query,
   orderByChild,
   onChildAdded,
-  orderByValue,
 } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
@@ -27,12 +26,9 @@ const HomeContainer = () => {
   let auth = getAuth();
   let db = getDatabase();
   let navigate = useNavigate();
-  // console.log(messages);
 
   const scrollIntoView = () => {
-    document
-      .getElementById("message-container")
-      .lastChild.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("message-container").lastChild.scrollIntoView();
   };
 
   useEffect(() => {
@@ -46,12 +42,11 @@ const HomeContainer = () => {
 
     if (!authToken) {
       navigate("/login");
-      return;
     }
   }, [navigate]);
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         let snapshot = await get(child(ref(getDatabase()), `users`));
         if (snapshot.exists()) {
@@ -64,6 +59,7 @@ const HomeContainer = () => {
           });
           setActiveUser(data[0] ? data[0] : {});
           setUsers(data);
+
           // Adding listeners for status of users
           snapshot.forEach((doc) => {
             const userRef = ref(db, "users/" + doc.val().uid + "/status");
@@ -83,6 +79,8 @@ const HomeContainer = () => {
         }
       }
     });
+
+    return () => unsubscribe();
   }, [auth, db]);
 
   useEffect(() => {
@@ -104,7 +102,6 @@ const HomeContainer = () => {
   }, [activeUser, db]);
 
   useEffect(() => {
-    // listen to new messages
     if (Object.keys(activeUser).length > 0 && auth.currentUser) {
       let db = getDatabase();
       // For refresh
@@ -116,19 +113,20 @@ const HomeContainer = () => {
       let status = ref(db, `users/${auth.currentUser.uid}/status`);
       onDisconnect(status).set("offline");
 
+      // listen to new messages
       let messagesRef = ref(db, "messages");
       onChildAdded(messagesRef, async (snap) => {
-        //   // setMessages((msg) => [...msg, snap.val()]);
-
         if (snap.val().senderId !== auth.currentUser.uid) {
           if (
             snap.val().senderId === activeUser.uid &&
+            snap.val().receiverId === auth.currentUser.uid &&
             snap.val().status !== "read"
           ) {
             await update(ref(db, `messages/${snap.val().docId}`), {
               status: "read",
             });
           } else if (
+            snap.val().receiverId === auth.currentUser.uid &&
             snap.val().status !== "read" &&
             snap.val().status !== "delivered" &&
             snap.val().docId
@@ -167,16 +165,6 @@ const HomeContainer = () => {
             messagesData.sort((a, b) => a.timestamp - b.timestamp);
             setMessages(messagesData);
           });
-          // const msgStatus = snapshot.val();
-          // let newData = JSON.parse(JSON.stringify(messages));
-
-          // newData.forEach((msg) => {
-          //   console.log(msg.docId, snap.val().docId);
-          //   if (msg.docId === snap.val().docId) {
-          //     msg["status"] = msgStatus;
-          //   }
-          // });
-          // setMessages(newData);
         });
       });
     }
