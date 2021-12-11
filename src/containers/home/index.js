@@ -1,6 +1,6 @@
 import HomeComponent from "../../components/home";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getDatabase,
   ref,
@@ -30,6 +30,22 @@ const HomeContainer = () => {
   const scrollIntoView = () => {
     document.getElementById("message-container").lastChild.scrollIntoView();
   };
+
+  const fetchMessages = useCallback(() => {
+    let messagesQuery = query(
+      ref(db, "messages"),
+      orderByChild("conversationId"),
+      equalTo([getAuth().currentUser.uid, activeUser.uid].sort().join(""))
+    );
+    get(messagesQuery).then((messageSnapshot) => {
+      let messagesData = [];
+      messageSnapshot.forEach((docs) => {
+        messagesData.push(docs.val());
+      });
+      messagesData.sort((a, b) => a.timestamp - b.timestamp);
+      setMessages(messagesData);
+    });
+  }, [activeUser.uid, db]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -85,21 +101,9 @@ const HomeContainer = () => {
 
   useEffect(() => {
     if (Object.keys(activeUser).length > 0) {
-      let messagesQuery = query(
-        ref(db, "messages"),
-        orderByChild("conversationId"),
-        equalTo([getAuth().currentUser.uid, activeUser.uid].sort().join(""))
-      );
-      get(messagesQuery).then((messageSnapshot) => {
-        let messagesData = [];
-        messageSnapshot.forEach((docs) => {
-          messagesData.push(docs.val());
-        });
-        messagesData.sort((a, b) => a.timestamp - b.timestamp);
-        setMessages(messagesData);
-      });
+      fetchMessages();
     }
-  }, [activeUser, db]);
+  }, [activeUser, db, fetchMessages]);
 
   useEffect(() => {
     if (Object.keys(activeUser).length > 0 && auth.currentUser) {
@@ -137,41 +141,15 @@ const HomeContainer = () => {
           }
         }
         if (auth.currentUser) {
-          let messagesQuery = query(
-            ref(db, "messages"),
-            orderByChild("conversationId"),
-            equalTo([getAuth().currentUser.uid, activeUser.uid].sort().join(""))
-          );
-          get(messagesQuery).then((messageSnapshot) => {
-            let messagesData = [];
-            messageSnapshot.forEach((docs) => {
-              messagesData.push(docs.val());
-            });
-            messagesData.sort((a, b) => a.timestamp - b.timestamp);
-            setMessages(messagesData);
-          });
+          fetchMessages();
           const msgRef = ref(db, "messages/" + snap.val().docId + "/status");
-          onValue(msgRef, (snapshot) => {
-            let messagesQuery = query(
-              ref(db, "messages"),
-              orderByChild("conversationId"),
-              equalTo(
-                [getAuth().currentUser.uid, activeUser.uid].sort().join("")
-              )
-            );
-            get(messagesQuery).then((messageSnapshot) => {
-              let messagesData = [];
-              messageSnapshot.forEach((docs) => {
-                messagesData.push(docs.val());
-              });
-              messagesData.sort((a, b) => a.timestamp - b.timestamp);
-              setMessages(messagesData);
-            });
+          onValue(msgRef, () => {
+            fetchMessages();
           });
         }
       });
     }
-  }, [activeUser, auth.currentUser, db]);
+  }, [activeUser, auth.currentUser, db, fetchMessages]);
 
   const handleActiveUser = (user) => {
     setActiveUser(user);

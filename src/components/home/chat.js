@@ -43,10 +43,6 @@ const ChatComponent = ({ onFinish, messages, activeUser }) => {
                 {data.receiverId === activeUser.uid ? (
                   <span id="details">
                     <span id="time">
-                      {/* {new Date(data.timestamp).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })} */}
                       {moment(data.timestamp).fromNow()}
                     </span>
                     <span id="status">{getStatusIcon(data.status)}</span>
