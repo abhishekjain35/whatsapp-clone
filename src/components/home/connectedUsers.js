@@ -1,40 +1,13 @@
 import "./styles/connectedUsers.css";
-import { useState, useEffect } from "react";
-import { List, Avatar, Skeleton, Divider } from "antd";
+import { List, Avatar, Skeleton } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const ConnectedUsersComponent = ({ users, handleActiveUser, activeUser }) => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-
-  const loadMoreData = () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-    fetch(
-      "https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo"
-    )
-      .then((res) => res.json())
-      .then((body) => {
-        setData([...data, ...body.results]);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    loadMoreData();
-  }, []);
-
   return (
     <div className="users-wrapper">
       <div id="scrollableDiv">
         <InfiniteScroll
           dataLength={users.length}
-          next={loadMoreData}
           loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
           scrollableTarget="scrollableDiv"
         >

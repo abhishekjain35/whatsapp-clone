@@ -116,7 +116,7 @@ const HomeContainer = () => {
       // listen to new messages
       let messagesRef = ref(db, "messages");
       onChildAdded(messagesRef, async (snap) => {
-        if (snap.val().senderId !== auth.currentUser.uid) {
+        if (auth.currentUser && snap.val().senderId !== auth.currentUser.uid) {
           if (
             snap.val().senderId === activeUser.uid &&
             snap.val().receiverId === auth.currentUser.uid &&
@@ -136,22 +136,7 @@ const HomeContainer = () => {
             });
           }
         }
-
-        let messagesQuery = query(
-          ref(db, "messages"),
-          orderByChild("conversationId"),
-          equalTo([getAuth().currentUser.uid, activeUser.uid].sort().join(""))
-        );
-        get(messagesQuery).then((messageSnapshot) => {
-          let messagesData = [];
-          messageSnapshot.forEach((docs) => {
-            messagesData.push(docs.val());
-          });
-          messagesData.sort((a, b) => a.timestamp - b.timestamp);
-          setMessages(messagesData);
-        });
-        const msgRef = ref(db, "messages/" + snap.val().docId + "/status");
-        onValue(msgRef, (snapshot) => {
+        if (auth.currentUser) {
           let messagesQuery = query(
             ref(db, "messages"),
             orderByChild("conversationId"),
@@ -165,7 +150,25 @@ const HomeContainer = () => {
             messagesData.sort((a, b) => a.timestamp - b.timestamp);
             setMessages(messagesData);
           });
-        });
+          const msgRef = ref(db, "messages/" + snap.val().docId + "/status");
+          onValue(msgRef, (snapshot) => {
+            let messagesQuery = query(
+              ref(db, "messages"),
+              orderByChild("conversationId"),
+              equalTo(
+                [getAuth().currentUser.uid, activeUser.uid].sort().join("")
+              )
+            );
+            get(messagesQuery).then((messageSnapshot) => {
+              let messagesData = [];
+              messageSnapshot.forEach((docs) => {
+                messagesData.push(docs.val());
+              });
+              messagesData.sort((a, b) => a.timestamp - b.timestamp);
+              setMessages(messagesData);
+            });
+          });
+        }
       });
     }
   }, [activeUser, auth.currentUser, db]);
