@@ -5,7 +5,7 @@ const ChatComponent = ({ onFinish, messages, activeUser }) => {
   const [form] = Form.useForm();
   return (
     <div className="chat-wrapper">
-      <div className="message-container">
+      <div id="message-container">
         {messages.map((data) => (
           <div
             className={`msg-wrapper ${
@@ -27,7 +27,9 @@ const ChatComponent = ({ onFinish, messages, activeUser }) => {
               >
                 {data.message}
               </span>
-              <span>{data.status}</span>
+              {data.receiverId === activeUser.uid ? (
+                <span>{data.status}</span>
+              ) : null}
             </div>
           </div>
         ))}

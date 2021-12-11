@@ -27,6 +27,19 @@ const HomeContainer = () => {
   let auth = getAuth();
   let db = getDatabase();
   let navigate = useNavigate();
+  // console.log(messages);
+
+  const scrollIntoView = () => {
+    document
+      .getElementById("message-container")
+      .lastChild.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollIntoView();
+    }
+  }, [messages]);
 
   useEffect(() => {
     let authToken = sessionStorage.getItem("Auth Token");

@@ -8,7 +8,7 @@
   justify-content: space-between;
 }
 
-.message-container {
+#message-container {
   overflow: auto;
   height: 90%;
 }
